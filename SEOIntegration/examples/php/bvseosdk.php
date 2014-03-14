@@ -3,15 +3,15 @@
 /**
  * BV PHP SEO SDK
  *
- * Base code to power either SEO or SEO and display. This SDK 
+ * Base code to power either SEO or SEO and display. This SDK
  * is provided as is and Bazaarvoice, Inc. is not responsbile
  * for future mainentence or support.  You are free to modify
- * this SDK as needed to suit your needs. 
+ * this SDK as needed to suit your needs.
  *
  * This SDK was built with the following assumptions:
  *      - you are running PHP 5 or greater
  *      - you have the curl library installed
- *      - every request has the user agent header 
+ *      - every request has the user agent header
  *        in it (if using a CDN like Akamai additional configuration
  *        maybe required).
  *
@@ -28,17 +28,17 @@
  *    'cloud_key' => 'company-cdfa682b84bef44672efed074093ccd3',
  *    'staging' => FALSE
  * ));
- * 
+ *
  */
 
 // ------------------------------------------------------------------------
 
 /**
  * BV Class
- * 
- * When you instantiate the BV class, pass it's constructor an array 
- * containing the following key value pairs. 
- * 
+ *
+ * When you instantiate the BV class, pass it's constructor an array
+ * containing the following key value pairs.
+ *
  *   Required fields:
  *      deployment_zone_id (string)
  *      product_id (string)
@@ -58,8 +58,8 @@ class BV {
     /**
      * BV Class Constructor
      *
-     * The constructor takes in all the arguments via a single array. 
-     * 
+     * The constructor takes in all the arguments via a single array.
+     *
      * @access public
      * @param array
      * @return object
@@ -67,10 +67,10 @@ class BV {
     public function __construct($params = array())
     {
         // check to make sure we have the required paramaters
-        if( empty($params) OR ! $params['deployment_zone_id'] OR ! $params['product_id']) 
+        if( empty($params) OR ! $params['deployment_zone_id'] OR ! $params['product_id'])
         {
-            throw new Exception('BV Class missing required paramters. 
-             BV expects an array with the following indexes: deployment_zone_id (string) and product_id 
+            throw new Exception('BV Class missing required paramters.
+             BV expects an array with the following indexes: deployment_zone_id (string) and product_id
              (string). ');
         }
 
@@ -81,13 +81,13 @@ class BV {
             'latency_timeout' => 1000,
             'current_page_url' => $this->_getCurrentUrl(),
             'bot_detection' => FALSE,  // bot detection should only be enabled if average execution time regularly exceeds 350ms.
-            'include_display_integration_code' => FALSE,  
+            'include_display_integration_code' => FALSE,
             'client_name' => $params['deployment_zone_id'],
             'internal_file_path' => FALSE,
             'bot_list' => 'msnbot|google|teoma|bingbot|yandexbot|yahoo', // used in regex to determine if request is a bot or not
         );
 
-        // merge passed in params with defualts for config. 
+        // merge passed in params with defualts for config.
         $this->config = array_merge($this->config, $params);
 
         // setup the reviews object
@@ -95,15 +95,15 @@ class BV {
 
         // setup the questions object
         $this->questions = new Questions($this->config);
-        
+
         // setup the timer object
 
     }
 
     // since this is used to set the default for an optional config option it is
-    // included in the BV class. 
+    // included in the BV class.
     public function _getCurrentUrl(){
-        // depending on protocal set the 
+        // depending on protocal set the
         // beginging of url and defualt port
         if(isset($_SERVER["HTTPS"])){
             $url = 'https://';
@@ -119,7 +119,7 @@ class BV {
         if ($_SERVER["SERVER_PORT"] != $defaultPort){
             $url .= ":".$_SERVER["SERVER_PORT"];
         }
-        
+
         $url .= $_SERVER["REQUEST_URI"];
 
         return $url;
@@ -149,9 +149,9 @@ class Base{
      * Render SEO
      *
      * Method used to do all the work to fetch, parse, and then return
-     * the SEO payload. This is set as protected so classes inheriting 
-     * from the base class can invoke it or replace it if needed. 
-     * 
+     * the SEO payload. This is set as protected so classes inheriting
+     * from the base class can invoke it or replace it if needed.
+     *
      * @access protected
      * @return string
      */
@@ -205,9 +205,9 @@ class Base{
     /**
      * isBot
      *
-     * Helper method to determine if current request is a bot or not. Will 
-     * use the configured regex string which can be overriden with params. 
-     * 
+     * Helper method to determine if current request is a bot or not. Will
+     * use the configured regex string which can be overriden with params.
+     *
      * @access private
      * @return bool
      */
@@ -227,13 +227,13 @@ class Base{
     /**
      * getPageNumber
      *
-     * Helper method to pull from the URL the page of SEO we need to view. 
-     * 
+     * Helper method to pull from the URL the page of SEO we need to view.
+     *
      * @access private
      * @return int
      */
     private function _getPageNumber()
-    {   
+    {
         // default to page 1 if a page is not specified in the URL
         $page_number = 1;
 
@@ -275,12 +275,12 @@ class Base{
      * buildSeoUrl
      *
      * Helper method to that builds the URL to the SEO payload
-     * 
+     *
      * @access private
      * @param int (page number)
      * @return string
      */
-    private function _buildSeoUrl($page_number){   
+    private function _buildSeoUrl($page_number){
         // are we pointing at staging or production?
         if($this->config['staging']){
             $hostname = $this->bv_config['seo-domain']['staging'];
@@ -330,8 +330,8 @@ class Base{
      * fetchFileContent
      *
      * Helper method that will take in a file path and return it's payload while
-     * handling the possible errors or exceptions that can happen. 
-     * 
+     * handling the possible errors or exceptions that can happen.
+     *
      * @access private
      * @param string (valid file path)
      * @return string (contents of file)
@@ -345,8 +345,8 @@ class Base{
      * fetchCloudContent
      *
      * Helper method that will take in a URL and return it's payload while
-     * handling the possible errors or exceptions that can happen. 
-     * 
+     * handling the possible errors or exceptions that can happen.
+     *
      * @access private
      * @param string (valid url)
      * @return string
@@ -400,8 +400,8 @@ class Base{
      * replaceTokens
      *
      * After we have an SEO payload we need to replace the {INSERT_PAGE_URI}
-     * tokens with the current page url so pagination works. 
-     * 
+     * tokens with the current page url so pagination works.
+     *
      * @access private
      * @param string (valid url)
      * @return string
@@ -417,61 +417,64 @@ class Base{
             $page_url_query_prefix = '?';
         }
 
-        $content = str_replace('{INSERT_PAGE_URI}', $this->config['current_page_url'] . $page_url_query_prefix, $content); 
+        $content = str_replace('{INSERT_PAGE_URI}', $this->config['current_page_url'] . $page_url_query_prefix, $content);
 
         return $content;
     }
 
     private function _buildComment($msg){
-    	$footer = '<ul id="BVSEOSDK" style="display:none;">';
-    	$footer .= "\n".'	<li id="vn">bvseo-1.0.1.1</li>';
-    	$footer .= "\n".'	<li id="sl">bvseo-p</li>';
-    	if ($this->config['internal_file_path']) {
-    		$footer .= "\n".'	<li id="mt">bvseo-FILE</li>';
-    	} else {
-    		$footer .= "\n".'	<li id="mt">bvseo-CLOUD</li>';
-    	}
-    	$footer .= "\n".'	<li id="et">bvseo-'.$this->response_time.'ms</li>';
-    	$footer .= "\n".'	<li id="ct">bvseo-'.strtoupper($this->config['bv_product']).'</li>';
-    	$footer .= "\n".'	<li id="st">bvseo-'.strtoupper($this->config['subject_type']).'</li>';
-    	$footer .= "\n".'	<li id="am">bvseo-getContent</li>';
-    	if (strlen($msg) > 0) {
-    		$footer .= "\n".'	<li id="ms">bvseo-msg: '.$msg.'</li>';
-    	}
-     	$footer .= "\n".'</ul>';   
-     	
-    	//when in debug mode, also display the following information
-    	if($_GET['bvreveal'] == 'debug') {
-    	$footer .= "\n".'<ul id="BVSEOSDK_DEBUG" style="display:none;">';
-    	$footer .= "\n".'	<li id="cloudKey">'.$this->config['cloud_key'].'</li>';
-    	$footer .= "\n".'	<li id="bv.root.folder">'.$this->config['deployment_zone_id'].'</li>';
-    	$footer .= "\n".'	<li id="stagingS3Hostname">'.$this->bv_config['seo-domain']['staging'].'</li>';
-    	$footer .= "\n".'	<li id="productionS3Hostname">'.$this->bv_config['seo-domain']['production'].'</li>';
-    	$staging = ($this->config['staging']) ? 'TRUE' : 'FALSE';
-       	$footer .= "\n".'	<li id="staging">'.$staging.'</li>'; 	
-    	$footer .= "\n".'	<li id="seo.sdk.execution.timeout">'.$this->config['latency_timeout'].'</li>';
-    	$bot_detection = ($this->config['bot_detection']) ? 'TRUE' : 'FALSE';
-    	$footer .= "\n".'	<li id="botDetection">'.$bot_detection.'</li>';
-    	$footer .= "\n".'	<li id="crawlerAgentPattern">'.$this->config['bot_list'].'</li>';
-    	$footer .= "\n".'	<li id="userAgent">'.$_SERVER['HTTP_USER_AGENT'].'</li>';
-    	$footer .= "\n".'	<li id="pageURI">'.$this->config['current_page_url'].'</li>';
-    	$footer .= "\n".'	<li id="subjectID">'.urlencode($this->config['product_id']).'</li>';
-    	$footer .= "\n".'	<li id="contentType">'.strtoupper($this->config['bv_product']).'</li>';
-    	$footer .= "\n".'	<li id="subjectType">'.strtoupper($this->config['subject_type']).'</li>';
-     	$footer .= "\n".'</ul>';    	
-    	}
+        $footer = '<ul id="BVSEOSDK" style="display:none;">';
+        $footer .= "\n".'   <li id="vn">bvseo-1.0.1.1</li>';
+        $footer .= "\n".'   <li id="sl">bvseo-p</li>';
+        if ($this->config['internal_file_path']) {
+            $footer .= "\n".'   <li id="mt">bvseo-FILE</li>';
+        } else {
+            $footer .= "\n".'   <li id="mt">bvseo-CLOUD</li>';
+        }
+
+        if (isset($this->response_time))
+            $footer .= "\n".'   <li id="et">bvseo-'.$this->response_time.'ms</li>';
+
+        $footer .= "\n".'   <li id="ct">bvseo-'.strtoupper($this->config['bv_product']).'</li>';
+        $footer .= "\n".'   <li id="st">bvseo-'.strtoupper($this->config['subject_type']).'</li>';
+        $footer .= "\n".'   <li id="am">bvseo-getContent</li>';
+        if (strlen($msg) > 0) {
+            $footer .= "\n".'   <li id="ms">bvseo-msg: '.$msg.'</li>';
+        }
+        $footer .= "\n".'</ul>';
+
+        //when in debug mode, also display the following information
+        if(isset($_GET['bvreveal']) && $_GET['bvreveal'] == 'debug') {
+        $footer .= "\n".'<ul id="BVSEOSDK_DEBUG" style="display:none;">';
+        $footer .= "\n".'   <li id="cloudKey">'.$this->config['cloud_key'].'</li>';
+        $footer .= "\n".'   <li id="bv.root.folder">'.$this->config['deployment_zone_id'].'</li>';
+        $footer .= "\n".'   <li id="stagingS3Hostname">'.$this->bv_config['seo-domain']['staging'].'</li>';
+        $footer .= "\n".'   <li id="productionS3Hostname">'.$this->bv_config['seo-domain']['production'].'</li>';
+        $staging = ($this->config['staging']) ? 'TRUE' : 'FALSE';
+        $footer .= "\n".'   <li id="staging">'.$staging.'</li>';
+        $footer .= "\n".'   <li id="seo.sdk.execution.timeout">'.$this->config['latency_timeout'].'</li>';
+        $bot_detection = ($this->config['bot_detection']) ? 'TRUE' : 'FALSE';
+        $footer .= "\n".'   <li id="botDetection">'.$bot_detection.'</li>';
+        $footer .= "\n".'   <li id="crawlerAgentPattern">'.$this->config['bot_list'].'</li>';
+        $footer .= "\n".'   <li id="userAgent">'.$_SERVER['HTTP_USER_AGENT'].'</li>';
+        $footer .= "\n".'   <li id="pageURI">'.$this->config['current_page_url'].'</li>';
+        $footer .= "\n".'   <li id="subjectID">'.urlencode($this->config['product_id']).'</li>';
+        $footer .= "\n".'   <li id="contentType">'.strtoupper($this->config['bv_product']).'</li>';
+        $footer .= "\n".'   <li id="subjectType">'.strtoupper($this->config['subject_type']).'</li>';
+        $footer .= "\n".'</ul>';
+        }
 
         return $footer;
        // return "\n".'<!--BVSEO|dp: '.$this->config['deployment_zone_id'].'|sdk: v1.0-p|msg: '.$msg.' -->';
     }
-	
-	private function _booleanToString($boolean){
-		if ($boolean){
-			return 'TRUE';
-		}else{
-			return 'FALSE';
-		}
-	}
+
+    private function _booleanToString($boolean){
+        if ($boolean){
+            return 'TRUE';
+        }else{
+            return 'FALSE';
+        }
+    }
 
 
 } // end of Base class
@@ -480,30 +483,30 @@ class Base{
 class Reviews extends Base{
 
     function __construct($params = array())
-    {   
+    {
         // call Base Class constructor
         parent::__construct($params);
-        
+
         // since we are in the reviews class
-        // we need to set the bv_product config 
+        // we need to set the bv_product config
         // to reviews so we get reviews in our
         // SEO request
         $this->config['bv_product'] = 'reviews';
 
-        // for reviews subject type will always 
+        // for reviews subject type will always
         // need to be product
         $this->config['subject_type'] = 'product';
     }
 
     public function renderSeo()
-    {   
+    {
        $pay_load = $this->_renderSeo();
 
        // if they want to power display integration as well
        // then we need to include the JS integration code
-       // regardless of if it's a bot or not 
+       // regardless of if it's a bot or not
        if($this->config['include_display_integration_code'])
-       {   
+       {
            $pay_load .= '
                <script>
                    $BV.ui("rr", "show_reviews", {
@@ -522,26 +525,26 @@ class Reviews extends Base{
 class Questions extends Base{
 
     function __construct($params = array())
-    {   
+    {
         // call Base Class constructor
         parent::__construct($params);
-        
+
         // since we are in the questions class
-        // we need to set the bv_product config 
+        // we need to set the bv_product config
         // to questions so we get questions in our
         // SEO request
         $this->config['bv_product'] = 'questions';
     }
 
     public function renderSeo()
-    {   
+    {
        $pay_load = $this->_renderSeo();
 
        // if they want to power display integration as well
        // then we need to include the JS integration code
-       // regardless of if it's a bot or not 
+       // regardless of if it's a bot or not
        if($this->config['include_display_integration_code'])
-       {   
+       {
 
            $pay_load .= '
                <script>
